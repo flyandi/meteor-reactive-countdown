@@ -7,7 +7,7 @@ Reactive Countdown is a simple library providing a reactive countdown timer.
 
 Install the library via the meteor command:
 
-```meteor add flyandi:reactivecountdown```
+```meteor add flyandi:reactive-countdown```
 
 
 ## How to use it
