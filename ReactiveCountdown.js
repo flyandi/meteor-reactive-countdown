@@ -59,6 +59,8 @@ ReactiveCountdown = (function () {
     			this._settings.tick();
     		}
 
+            this._dependency.changed();
+
     		if(this._current <= 0) {
 
     			this.stop();
@@ -67,8 +69,6 @@ ReactiveCountdown = (function () {
     				this._settings.completed();
     			}
     		}
-
-    		this._dependency.changed();
 
         }.bind(this), this._interval);
     };
