@@ -1,6 +1,6 @@
 Package.describe({
   name: 'flyandi:reactive-countdown',
-  version: '0.0.1',
+  version: '0.0.2',
   summary: 'A simple reactive countdown timer for Meteor',
   git: 'https://github.com/flyandi/meteor-reactive-countdown.git',
   documentation: 'README.md'
