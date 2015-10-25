@@ -124,6 +124,23 @@ Removes the amount specified from the countdown value.
 Returns the current value of the countdown. This method is reactive.
 
 
+```javascript
+ .getFormattedObj();
+```
+
+Returns the current value of the countdown as an object containing ```days```, ```hours```, ```minutes``` and ```seconds```.
+eg. if ```.get()``` returns 612, ```.getFormattedObj()``` will return ```{days : 0, hours : 0, minutes : 10, seconds : 12}```
+This method (purposefully) works only if steps is set to 1 (default) and if interval is set to the 1000 (1 second)(default), 60000(1 minute), 3600000 (1 hour) or 86400000 (1 day).
+
+
+```javascript
+ .getFormattedStr();
+```
+
+Returns the current value of the countdown as a formatted string. eg. ```4 hours, 15 minutes, 10 seconds```
+If true is passed as first parameter, this methods also include zero components in the formatted string. eg. ```0 days, 15 hours, 0 minutes, 12 seconds```
+This method (purposefully) works only if steps is set to 1 (default) and if interval is set to the 1000 (1 second)(default), 60000(1 minute), 3600000 (1 hour) or 86400000 (1 day).
+
 
 ## License
 
