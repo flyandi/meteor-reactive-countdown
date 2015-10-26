@@ -131,19 +131,20 @@ ReactiveCountdown = (function () {
      * works only if interval is set to 1 second, 1 minute, 1 hour or 1 day
      * works only if steps is set to 1
      */
-    ReactiveCountdown.prototype.getFormattedStr = function(show_zero){
+    ReactiveCountdown.prototype.getFormattedStr = function(formattedStr, showZero){
+        if(typeof formattedStr == undefined){
+            return;
+        }
+        if(typeof showZero == undefined){
+            showZero = false;
+        }
         if(this._steps == 1 && (this._interval == 1000 || this._interval == 60*1000 || this._interval == 60*60*1000 || this._interval == 24*60*60*1000)){
             var formattedObj = this.getFormattedObj();
             if(formattedObj){
-                var formattedStr = "";
-                if (formattedObj.days || show_zero)
-                    formattedStr += formattedObj.days + " days, ";
-                if (formattedObj.hours || show_zero)
-                    formattedStr += formattedObj.hours + " hours, ";
-                if (formattedObj.minutes || show_zero)
-                    formattedStr += formattedObj.minutes + " minutes, ";
-                if (formattedObj.seconds || show_zero)
-                    formattedStr += formattedObj.seconds + " seconds";
+                formattedStr = formattedStr.replace(/(<([^>]*)__D([^>]*)>)/, (formattedObj.days || showZero) ? "$2" + formattedObj.days + "$3" : "");
+                formattedStr = formattedStr.replace(/(<([^>]*)__H([^>]*)>)/, (formattedObj.hours || showZero) ? "$2" + formattedObj.hours + "$3" : "");
+                formattedStr = formattedStr.replace(/(<([^>]*)__M([^>]*)>)/, (formattedObj.minutes || showZero)? "$2" + formattedObj.minutes + "$3" : "");
+                formattedStr = formattedStr.replace(/(<([^>]*)__S([^>]*)>)/, (formattedObj.seconds || showZero)? "$2" + formattedObj.seconds + "$3" : "");
                 return formattedStr;
             }
         }
