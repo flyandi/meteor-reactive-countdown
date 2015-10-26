@@ -87,67 +87,38 @@ ReactiveCountdown = (function () {
     };
 
     ReactiveCountdown.prototype.get = function() {
-    	
+
     	this._dependency.depend();
 
     	return this._current;
     };
 
+    ReactiveCountdown.prototype.getFormattedObject = function(seconds){
 
-    /**
-     * Returns an object containing days, hours, minutes and seconds.
-     * works only if interval is set to 1 second, 1 minute, 1 hour or 1 day
-     * works only if steps is set to 1
-     */
-    ReactiveCountdown.prototype.getFormattedObj = function(){
-        if(this._steps == 1 && (this._interval == 1000 || this._interval == 60*1000 || this._interval == 60*60*1000 || this._interval == 24*60*60*1000)){
-            var secs = this.get();
-            if(secs){
-                secs = Math.round(secs);
-                var days = Math.floor(secs / (24 * 60 * 60));
+        var ms = (seconds | this.__current) * 1000;
 
-                var divisor_for_hours = secs % (24 * 60 * 60);
-                var hours = Math.floor(divisor_for_hours / (60 * 60));
-
-                var divisor_for_minutes = divisor_for_hours % (60 * 60);
-                var minutes = Math.floor(divisor_for_minutes / 60);
-
-                var divisor_for_seconds = divisor_for_minutes % 60;
-                var seconds = Math.ceil(divisor_for_seconds);
-
-                var formattedObj = {
-                    "days": days,
-                    "hours": hours,
-                    "minutes": minutes,
-                    "seconds": seconds
-                };
-                return formattedObj;
-            }
+        return {
+            seconds: Math.floor((ms % 6e4) / 1e3),
+            minutes: Math.floor((ms % 3.6e6) / 6e4),
+            hours:  (ms % 8.64e7)/ 3.6e6 | 0,
+            days: ms / 8.64e7 | 0
         }
     };
 
-    /**
-     * Returns string containing days, hours, minutes and seconds.
-     * works only if interval is set to 1 second, 1 minute, 1 hour or 1 day
-     * works only if steps is set to 1
-     */
-    ReactiveCountdown.prototype.getFormattedStr = function(formattedStr, showZero){
-        if(typeof formattedStr == undefined){
-            return;
-        }
-        if(typeof showZero == undefined){
-            showZero = false;
-        }
-        if(this._steps == 1 && (this._interval == 1000 || this._interval == 60*1000 || this._interval == 60*60*1000 || this._interval == 24*60*60*1000)){
-            var formattedObj = this.getFormattedObj();
-            if(formattedObj){
-                formattedStr = formattedStr.replace(/(<([^>]*)__D([^>]*)>)/, (formattedObj.days || showZero) ? "$2" + formattedObj.days + "$3" : "");
-                formattedStr = formattedStr.replace(/(<([^>]*)__H([^>]*)>)/, (formattedObj.hours || showZero) ? "$2" + formattedObj.hours + "$3" : "");
-                formattedStr = formattedStr.replace(/(<([^>]*)__M([^>]*)>)/, (formattedObj.minutes || showZero)? "$2" + formattedObj.minutes + "$3" : "");
-                formattedStr = formattedStr.replace(/(<([^>]*)__S([^>]*)>)/, (formattedObj.seconds || showZero)? "$2" + formattedObj.seconds + "$3" : "");
-                return formattedStr;
-            }
-        }
+    ReactiveCountdown.prototype.getFormattedString = function(format, showZero){
+
+        var format = format instanceof String ? format : '%D days %H hours %M minutes %S seconds',
+            current = this.getFormattedObject();
+
+        [['S', 'seconds'], ['M', 'minutes'], ['H', 'hours'], ['D', 'days']].forEach(function(part) {
+
+            var v =  current[part[1]] | 0;
+
+            format = format.replace(new RegExp("%" + part[0], "g"), (showZero && (v >= 0) && (v < 10) ? '0' : '') + v);
+
+        });
+
+        return format;
     };
 
     return ReactiveCountdown;

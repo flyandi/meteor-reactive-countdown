@@ -8,7 +8,7 @@ Tinytest.add('5 second countdown', function (test) {
 			tick: function() {
 
 				collect += 1;
-			
+
 			},
 
 			completed: function() {
