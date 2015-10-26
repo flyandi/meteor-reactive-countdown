@@ -93,7 +93,62 @@ ReactiveCountdown = (function () {
     	return this._current;
     };
 
+
+    /**
+     * Returns an object containing days, hours, minutes and seconds.
+     * works only if interval is set to 1 second, 1 minute, 1 hour or 1 day
+     * works only if steps is set to 1
+     */
+    ReactiveCountdown.prototype.getFormattedObj = function(){
+        if(this._steps == 1 && (this._interval == 1000 || this._interval == 60*1000 || this._interval == 60*60*1000 || this._interval == 24*60*60*1000)){
+            var secs = this.get();
+            if(secs){
+                secs = Math.round(secs);
+                var days = Math.floor(secs / (24 * 60 * 60));
+
+                var divisor_for_hours = secs % (24 * 60 * 60);
+                var hours = Math.floor(divisor_for_hours / (60 * 60));
+
+                var divisor_for_minutes = divisor_for_hours % (60 * 60);
+                var minutes = Math.floor(divisor_for_minutes / 60);
+
+                var divisor_for_seconds = divisor_for_minutes % 60;
+                var seconds = Math.ceil(divisor_for_seconds);
+
+                var formattedObj = {
+                    "days": days,
+                    "hours": hours,
+                    "minutes": minutes,
+                    "seconds": seconds
+                };
+                return formattedObj;
+            }
+        }
+    };
+
+    /**
+     * Returns string containing days, hours, minutes and seconds.
+     * works only if interval is set to 1 second, 1 minute, 1 hour or 1 day
+     * works only if steps is set to 1
+     */
+    ReactiveCountdown.prototype.getFormattedStr = function(formattedStr, showZero){
+        if(typeof formattedStr == undefined){
+            return;
+        }
+        if(typeof showZero == undefined){
+            showZero = false;
+        }
+        if(this._steps == 1 && (this._interval == 1000 || this._interval == 60*1000 || this._interval == 60*60*1000 || this._interval == 24*60*60*1000)){
+            var formattedObj = this.getFormattedObj();
+            if(formattedObj){
+                formattedStr = formattedStr.replace(/(<([^>]*)__D([^>]*)>)/, (formattedObj.days || showZero) ? "$2" + formattedObj.days + "$3" : "");
+                formattedStr = formattedStr.replace(/(<([^>]*)__H([^>]*)>)/, (formattedObj.hours || showZero) ? "$2" + formattedObj.hours + "$3" : "");
+                formattedStr = formattedStr.replace(/(<([^>]*)__M([^>]*)>)/, (formattedObj.minutes || showZero)? "$2" + formattedObj.minutes + "$3" : "");
+                formattedStr = formattedStr.replace(/(<([^>]*)__S([^>]*)>)/, (formattedObj.seconds || showZero)? "$2" + formattedObj.seconds + "$3" : "");
+                return formattedStr;
+            }
+        }
+    };
+
     return ReactiveCountdown;
 })();
-
-                                
