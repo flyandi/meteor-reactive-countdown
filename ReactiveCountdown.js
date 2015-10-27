@@ -105,21 +105,29 @@ ReactiveCountdown = (function () {
         }
     };
 
-    ReactiveCountdown.prototype.getFormattedString = function(){
+    ReactiveCountdown.prototype.getFormattedString = function(format){
         
-        var format = (typeof format == 'string' || format instanceof String) ? format : '<%DD days ><%HH hours ><%MM minutes ><%SS seconds>',
-            current = this.getFormattedObject();
+        var format = (typeof format == 'string' || format instanceof String) ? format : '<!%DD days >%HH hours %MM minutes %SS seconds',
+            current = this.getFormattedObj();
         
-        for(var part in [['S', 'seconds'], ['M', 'minutes'], ['H', 'hours'], ['D', 'days']]) {
+        var parts = [['S', 'seconds'], ['M', 'minutes'], ['H', 'hours'], ['D', 'days']];
+        for(var i = 0; i < parts.length ; i++) {
 
-            var v =  current[part[1]] | 0;
+            var part = parts[i], v =  current[part[1]] | 0;
 
+            format = format.replace(new RegExp("<!([^>]*)(%" + part[0] + part[0] + "?)([^>]*)>", "g"), v ? "$1$2$3" : "" )
+                            // If any %X or %XX is 0, anything within the surrounding `<!` and `>` to be "" (removed)
+                            // This is required if a user doesn't want to display a part that is equal to 0
+                            // eg. in format "<! %HH hours > ....", if the user doesn't want to display hours when (hours == 0), its of no use displaying the string next to it " hours"
+                            // To do so, all he has to do is enclose a part within <! and > and it will be removed from formatted string if the part is 0.
 
-            format = format.replace(new RegExp("<<([^>]*)(%" + part[0] + part[0] + "?)([^>]*)>>", "g"), v ? "<$1$2$3>" : "" )
-                            .replace(new RegExp("<([^>]*)%" + part[0] + part[0] + "([^>]*)>", "g"), "$1" + ((v >= 0) && (v < 10) ? '0' : '') + v + "$2")
-                            .replace(new RegExp("<([^>]*)%" + part[0] + "([^>]*)>", "g"), "$1" + v + "$2");
+                            .replace(new RegExp("(.*)%" + part[0] + part[0] + "(.*)", "g"), "$1" + ((v >= 0) && (v < 10) ? '0' : '') + v + "$2")
+                            //To pad single digit parts with a preceding zero, The user has to specify %XX instead of %X
 
-        };
+                            .replace(new RegExp("(.*)%" + part[0] + "(.*)", "g"), "$1" + v + "$2");
+                            //Least priority to %X not enclosed within <! >
+            
+        }
 
         return format;
     };
