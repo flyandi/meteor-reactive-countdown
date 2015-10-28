@@ -108,7 +108,7 @@ ReactiveCountdown = (function () {
     ReactiveCountdown.prototype.getFormattedString = function(format){
         
         var format = (typeof format == 'string' || format instanceof String) ? format : '<!%DD days >%HH hours %MM minutes %SS seconds',
-            current = this.getFormattedObj();
+            current = this.getFormattedObject();
         
         var parts = [['S', 'seconds'], ['M', 'minutes'], ['H', 'hours'], ['D', 'days']];
         for(var i = 0; i < parts.length ; i++) {
@@ -125,7 +125,7 @@ ReactiveCountdown = (function () {
                             //To pad single digit parts with a preceding zero, The user has to specify %XX instead of %X
 
                             .replace(new RegExp("(.*)%" + part[0] + "(.*)", "g"), "$1" + v + "$2");
-                            //Least priority to %X not enclosed within <! >
+                            //finally replace %X not enclosed within <! >
             
         }
 
