@@ -36,39 +36,39 @@ ReactiveCountdown = (function () {
 
     // Constructor
     function ReactiveCountdown(countdown, settings) {
-    	this._settings = settings || {};
-    	this._dependency = new Tracker.Dependency;
-    	this._countdown = countdown;
-    	this._interval = this._settings.interval || 1000; 
-    	this._steps = this._settings.steps || 1;
-    	this._id = false;
+        this._settings = settings || {};
+        this._dependency = new Tracker.Dependency;
+        this._countdown = countdown;
+        this._interval = this._settings.interval || 1000; 
+        this._steps = this._settings.steps || 1;
+        this._id = false;
     };
 
     ReactiveCountdown.prototype.start = function(completed, tick){
 
-    	if(completed) this._settings.completed = completed;
-    	if(tick) this._settings.tick = tick;
+        if(completed) this._settings.completed = completed;
+        if(tick) this._settings.tick = tick;
 
-    	this._current = this._countdown;
+        this._current = this._countdown;
 
-    	this._id = Meteor.setInterval(function(){
+        this._id = Meteor.setInterval(function(){
 
-    		this._current = this._current - this._steps;
+            this._current = this._current - this._steps;
 
-    		if(typeof(this._settings.tick) == "function") {
-    			this._settings.tick();
-    		}
+            if(typeof(this._settings.tick) == "function") {
+                this._settings.tick();
+            }
 
             this._dependency.changed();
 
-    		if(this._current <= 0) {
+            if(this._current <= 0) {
 
-    			this.stop();
+                this.stop();
 
-    			if(typeof(this._settings.completed) == "function") {
-    				this._settings.completed();
-    			}
-    		}
+                if(typeof(this._settings.completed) == "function") {
+                    this._settings.completed();
+                }
+            }
 
         }.bind(this), this._interval);
     };
@@ -79,18 +79,18 @@ ReactiveCountdown = (function () {
     };
 
     ReactiveCountdown.prototype.add = function(unit) {
-    	this._current = this._current + (unit || 0);
+        this._current = this._current + (unit || 0);
     };
 
     ReactiveCountdown.prototype.remove = function(unit) {
-    	this._current = this._current - (unit || 0);
+        this._current = this._current - (unit || 0);
     };
 
     ReactiveCountdown.prototype.get = function() {
 
-    	this._dependency.depend();
+        this._dependency.depend();
 
-    	return this._current;
+        return this._current;
     };
 
     ReactiveCountdown.prototype.getFormattedObject = function(seconds){
@@ -105,18 +105,29 @@ ReactiveCountdown = (function () {
         }
     };
 
-    ReactiveCountdown.prototype.getFormattedString = function(format, showZero){
-
-        var format = format instanceof String ? format : '%D days %H hours %M minutes %S seconds',
+    ReactiveCountdown.prototype.getFormattedString = function(format){
+        
+        var format = (typeof format == 'string' || format instanceof String) ? format : '<!%DD days >%HH hours %MM minutes %SS seconds',
             current = this.getFormattedObject();
+        
+        var parts = [['S', 'seconds'], ['M', 'minutes'], ['H', 'hours'], ['D', 'days']];
+        for(var i = 0; i < parts.length ; i++) {
 
-        [['S', 'seconds'], ['M', 'minutes'], ['H', 'hours'], ['D', 'days']].forEach(function(part) {
+            var part = parts[i], v =  current[part[1]] | 0;
 
-            var v =  current[part[1]] | 0;
+            format = format.replace(new RegExp("<!([^>]*)(%" + part[0] + part[0] + "?)([^>]*)>", "g"), v ? "$1$2$3" : "" )
+                            // If any %X or %XX is 0, anything within the surrounding `<!` and `>` to be "" (removed)
+                            // This is required if a user doesn't want to display a part that is equal to 0
+                            // eg. in format "<! %HH hours > ....", if the user doesn't want to display hours when (hours == 0), its of no use displaying the string next to it " hours"
+                            // To do so, all he has to do is enclose a part within <! and > and it will be removed from formatted string if the part is 0.
 
-            format = format.replace(new RegExp("%" + part[0], "g"), (showZero && (v >= 0) && (v < 10) ? '0' : '') + v);
+                            .replace(new RegExp("(.*)%" + part[0] + part[0] + "(.*)", "g"), "$1" + ((v >= 0) && (v < 10) ? '0' : '') + v + "$2")
+                            //To pad single digit parts with a preceding zero, The user has to specify %XX instead of %X
 
-        });
+                            .replace(new RegExp("(.*)%" + part[0] + "(.*)", "g"), "$1" + v + "$2");
+                            //finally replace %X not enclosed within <! >
+            
+        }
 
         return format;
     };

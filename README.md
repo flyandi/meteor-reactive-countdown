@@ -139,7 +139,9 @@ Returns the current value of the countdown as a formatted string. The method all
 
 The default format is ```%D days %H hours %M minutes %S seconds``` where ```%D``` is replaced with the current **days**, ```%H``` is replaced with the **hours**, ```%M``` is replaced with the **minutes** and ```%S``` is replaced with the **seconds**.
 
-If ```showZero``` is  ```true```, all single digit numbers will be prepend with an 0.
+If single digit numbers require padding (prepending 0), specify it with `%DD, %HH, %MM or %SS`.
+
+There may be cases where you prefer not to display a number when it is 0. To do so, just enclose it within `<!` and `>` and it is done. Moreover, whatever you enclose within `<!` and `>` will be removed from the output string. eg. `<!%HH hours >%MM minutes %SS seconds` will result in say `05 minutes 20 seconds` and not `00 hours 05 minutes 20 seconds` when hours is 0. 
 
 
 ## License
