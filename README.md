@@ -97,6 +97,13 @@ Resets the countdown and starts it. Optional allows to override the callbacks **
 
 
 ```javascript
+ .resume();
+```
+
+Resumes the countdown without resetting the current time.
+
+
+```javascript
  .stop();
 ```
 

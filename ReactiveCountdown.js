@@ -44,6 +44,29 @@ ReactiveCountdown = (function () {
     	this._id = false;
     };
 
+    ReactiveCountdown.prototype._startInterval = function() {
+        this._id = Meteor.setInterval(function(){
+
+            this._current = this._current - this._steps;
+
+            if(typeof(this._settings.tick) == "function") {
+                this._settings.tick();
+            }
+
+            this._dependency.changed();
+
+            if(this._current <= 0) {
+
+                this.stop();
+
+                if(typeof(this._settings.completed) == "function") {
+                    this._settings.completed();
+                }
+            }
+
+        }.bind(this), this._interval);
+    };
+
     ReactiveCountdown.prototype.start = function(completed, tick){
 
     	if(completed) this._settings.completed = completed;
@@ -51,31 +74,16 @@ ReactiveCountdown = (function () {
 
     	this._current = this._countdown;
 
-    	this._id = Meteor.setInterval(function(){
-
-    		this._current = this._current - this._steps;
-
-    		if(typeof(this._settings.tick) == "function") {
-    			this._settings.tick();
-    		}
-
-            this._dependency.changed();
-
-    		if(this._current <= 0) {
-
-    			this.stop();
-
-    			if(typeof(this._settings.completed) == "function") {
-    				this._settings.completed();
-    			}
-    		}
-
-        }.bind(this), this._interval);
+        this._startInterval();
     };
 
     ReactiveCountdown.prototype.stop = function(){
         Meteor.clearInterval(this._id);
         this._id = false;
+    };
+
+    ReactiveCountdown.prototype.resume = function() {
+        this._startInterval();
     };
 
     ReactiveCountdown.prototype.add = function(unit) {
