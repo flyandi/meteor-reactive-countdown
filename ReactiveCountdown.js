@@ -45,6 +45,8 @@ ReactiveCountdown = (function () {
     };
 
     ReactiveCountdown.prototype._startInterval = function() {
+        if(this._id) return;
+
         this._id = Meteor.setInterval(function(){
 
             this._current = this._current - this._steps;
