@@ -22,7 +22,7 @@ See the example below to get an idea how to use this library.
 </template>
 ```
 
-```javasscript
+```javascript
 
 var countdown = new ReactiveCountdown(30);
 
