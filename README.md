@@ -22,7 +22,7 @@ See the example below to get an idea how to use this library.
 </template>
 ```
 
-```javasscript
+```javascript
 
 var countdown = new ReactiveCountdown(30);
 
@@ -94,6 +94,13 @@ Examples for constructors:
 ```
 
 Resets the countdown and starts it. Optional allows to override the callbacks **completed** and **tick**.
+
+
+```javascript
+ .resume();
+```
+
+Resumes the countdown without resetting the current time.
 
 
 ```javascript
